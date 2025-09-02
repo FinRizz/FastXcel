@@ -1,0 +1,37 @@
+# Rust / Cargo
+/target/
+/Cargo.lock
+
+# Debug / Release
+**/*.rs.bk
+**/*.pdb
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.iml
+
+# Logs / Temp
+*.log
+*.tmp
+*.swp
+*.swo
+
+# OS-specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Rustfmt / Clippy backups
+**/*.rs.orig
+
+# Python (if you later use PyO3 or bindings)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
