@@ -2,6 +2,7 @@
 name = "fastxcel"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.88"
 authors = ["Ayush Tripathi"]
 description = "A blazing fast viewer for large datasets"
 

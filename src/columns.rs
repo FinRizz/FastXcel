@@ -120,3 +120,49 @@ fn parse_cmp(ts:&[Tok], i:usize)->Result<(Expr,usize),()> {
         }
     } else { Err(()) }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parsed(input: &str) -> String {
+        format!("{:?}", ExprBuilder::parse(input).expect("expression should parse"))
+    }
+
+    fn rendered(expr: Expr) -> String {
+        format!("{expr:?}")
+    }
+
+    #[test]
+    fn parse_filter_gives_and_higher_precedence_than_or() {
+        let actual = parsed("A > 1 | B > 2 & C > 3");
+        let expected = col("A")
+            .gt(lit(1.0))
+            .or(col("B").gt(lit(2.0)).and(col("C").gt(lit(3.0))));
+
+        assert_eq!(actual, rendered(expected));
+    }
+
+    #[test]
+    fn parse_filter_keeps_logical_operators_left_associative() {
+        let actual = parsed("A > 1 | B > 2 | C > 3");
+        let expected = col("A")
+            .gt(lit(1.0))
+            .or(col("B").gt(lit(2.0)))
+            .or(col("C").gt(lit(3.0)));
+
+        assert_eq!(actual, rendered(expected));
+    }
+
+    #[test]
+    fn parse_filter_accepts_trailing_tokens_for_now() {
+        assert!(ExprBuilder::parse("Open > 100 trailing").is_some());
+    }
+
+    #[test]
+    fn parse_filter_silently_rejects_invalid_input_for_now() {
+        assert!(ExprBuilder::parse("Open = 100").is_none());
+        assert!(ExprBuilder::parse("Open >").is_none());
+        assert!(ExprBuilder::parse("(Open > 100").is_none());
+    }
+}

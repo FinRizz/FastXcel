@@ -9,14 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A library crate seam and parser characterization tests.
 - Project documentation: `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`,
   `CHANGELOG.md`, `docs/ARCHITECTURE.md`, GitHub issue/PR templates, and a CI workflow.
 - Expanded `README.md` with a filter-expression reference, the column alias table, and an
   explicit list of current limitations.
 
-## [0.1.0] - 2025-09-02
+## 0.1.0 repository milestone - 2025-09-02
 
-Initial release.
+Initial code milestone. This version was never published as a reproducible tagged release; the
+first CI-built release is planned for `v0.2.0`.
 
 ### Added
 
@@ -34,5 +36,4 @@ Initial release.
 - Release profile tuned for size and speed: `opt-level = 3`, LTO, one codegen unit,
   `panic = "abort"`, symbols stripped.
 
-[Unreleased]: https://github.com/FinRizz/FastXcel/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/FinRizz/FastXcel/releases/tag/v0.1.0
+[Unreleased]: https://github.com/FinRizz/FastXcel/commits/HEAD
