@@ -1,4 +1,9 @@
 pub mod app;
 pub mod columns;
+pub mod csv_reader;
 pub mod data;
+pub mod filter;
+pub mod model;
+pub mod numeric;
+pub mod parquet_reader;
 pub mod ui;

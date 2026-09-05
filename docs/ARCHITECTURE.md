@@ -9,8 +9,9 @@ application, data, column, and UI modules; `src/main.rs` initializes logging and
 `DataEngine::fetch_page`, which clones the stored Polars `LazyFrame`, canonicalizes column names,
 parses and applies the filter, slices at the current offset, and calls `collect`. The table then
 virtualizes drawing of the collected page. There is currently no page cache, so an unchanged
-frame repeats that query. `open_path` also currently calls `collect` to derive the schema, which
-materializes the dataset during open. These are known constraints, not intended architecture.
+frame repeats that query. `open_path` now collects schema metadata without materializing the
+dataset, but the page fetch path still collects the active slice. These are known constraints, not
+intended architecture.
 
 ```text
 eframe update

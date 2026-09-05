@@ -131,7 +131,7 @@ only place column naming is handled.
 
 ## Current status and known limitations
 
-FastXcel is a working MVP at `0.1.0`. Being straight about where it stands:
+FastXcel is a working MVP at `0.2.0`. Being straight about where it stands:
 
 - **Opening a file materializes it.** The schema is currently derived by collecting the whole
   frame, so peak memory on open scales with file size rather than page size. Paging *after* open

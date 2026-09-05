@@ -1,0 +1,41 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.88
+          targets: x86_64-pc-windows-msvc
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Package executable
+        shell: pwsh
+        run: |
+          $exe = "target\release\fastxcel.exe"
+          $checksum = Get-FileHash -Algorithm SHA256 $exe
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item $exe dist\fastxcel.exe
+          $checksum.Hash.ToLower() | Set-Content dist\fastxcel.exe.sha256 -NoNewline
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastxcel-windows
+          path: dist/*
