@@ -7,7 +7,7 @@ By participating you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## Getting set up
 
-You need the [Rust toolchain](https://rustup.rs) 1.75 or newer. On Windows, the MSVC toolchain
+You need the [Rust toolchain](https://rustup.rs) 1.88 or newer. On Windows, the MSVC toolchain
 plus the Visual Studio Build Tools ("Desktop development with C++") is the tested configuration.
 
 ```powershell
@@ -27,8 +27,8 @@ Two things that will save you time:
 - **Always run with `--release`.** A debug build of Polars is slow enough that the app looks
   broken on any real dataset. If you are debugging behavior rather than speed, add
   `[profile.dev] opt-level = 1` locally rather than reaching for a bare debug build.
-- **`Cargo.lock` is currently gitignored**, so your dependency versions may differ from someone
-  else's. If a build fails for you and not for CI, that is the first thing to check.
+- **Keep `Cargo.lock` unchanged unless dependencies intentionally change.** It is tracked so local
+  builds and CI resolve the same versions.
 
 ### Logging
 
@@ -40,16 +40,16 @@ $env:RUST_LOG="debug"; cargo run --release
 
 ## Verifying a change
 
-There is **no test suite yet** — adding one is among the most valuable contributions available.
-The filter parser in `src/columns.rs` is pure, self-contained, and needs no GUI to exercise, so it
-is the natural place to start:
+Parser characterization tests live beside the implementation in `src/columns.rs`. Add focused
+unit tests there for grammar changes and integration tests under `tests/` for public library
+behavior:
 
 ```powershell
 cargo test                       # whole suite
 cargo test --lib parse_filter    # a single test by name
 ```
 
-Until then, verify by hand:
+Run the automated checks first:
 
 ```powershell
 cargo check
@@ -75,7 +75,8 @@ CI runs a formatting check as advisory only; it will not block your PR.
 
 | File | Responsibility |
 | --- | --- |
-| `src/main.rs` | Crate root, module declarations, `eframe::run_native`, logger init |
+| `src/lib.rs` | Library module root exposed to integration tests and the launcher |
+| `src/main.rs` | Thin `eframe::run_native` launcher and logger initialization |
 | `src/app.rs` | `UltraFastApp` — all UI state, top bar, per-frame `update` |
 | `src/data.rs` | `DataEngine` — owns the `LazyFrame`; `open_path`, `fetch_page` |
 | `src/columns.rs` | `alias_map` / `canonicalize_columns`, plus the filter DSL parser |
@@ -89,8 +90,8 @@ Common changes map to exactly one place:
 - **Extend the filter syntax** → `tokenize` and `parse_cmp` in `src/columns.rs`.
 - **Support a new file format** → the extension match in `DataEngine::open_path`.
 
-`src/mod.rs` is dead code. With `main.rs` as the crate root, Rust never compiles `src/mod.rs`, so
-module declarations added there have no effect. Do not extend it.
+`src/mod.rs` is legacy dead code; the active module root is `src/lib.rs`. Do not extend
+`src/mod.rs`.
 
 Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) before any non-trivial change — it documents
 the per-frame query behavior and the parser grammar, both of which are easy to break by accident.

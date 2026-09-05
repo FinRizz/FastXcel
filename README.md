@@ -5,7 +5,7 @@ Built with Rust + [Polars](https://pola.rs) + [egui](https://github.com/emilk/eg
 
 [![CI](https://github.com/FinRizz/FastXcel/actions/workflows/ci.yml/badge.svg)](https://github.com/FinRizz/FastXcel/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
+[![Rust](https://img.shields.io/badge/rust-1.88%2B-orange.svg)](https://www.rust-lang.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey.svg)](#installation)
 
 ---
@@ -37,12 +37,14 @@ desktop viewer built for the specific job of *looking at* large tabular market d
 
 ### Prebuilt binary (Windows)
 
-A prebuilt `fastxcel.exe` ships at the root of this repository — download it and double-click.
-Nothing else to install.
+Reproducible Windows binaries will be attached to tagged releases beginning with `v0.2.0`.
+When available, download `fastxcel.exe` and its checksum from the
+[GitHub Releases page](https://github.com/FinRizz/FastXcel/releases). The repository does not
+track generated executables. Until `v0.2.0` is published, build from source below.
 
 ### Build from source
 
-Requires the [Rust toolchain](https://rustup.rs) (1.75 or newer).
+Requires the [Rust toolchain](https://rustup.rs) (1.88 or newer).
 
 ```powershell
 git clone https://github.com/FinRizz/FastXcel
@@ -129,7 +131,7 @@ only place column naming is handled.
 
 ## Current status and known limitations
 
-FastXcel is a working MVP at `0.1.0`. Being straight about where it stands:
+FastXcel is a working MVP at `0.2.0`. Being straight about where it stands:
 
 - **Opening a file materializes it.** The schema is currently derived by collecting the whole
   frame, so peak memory on open scales with file size rather than page size. Paging *after* open
@@ -154,7 +156,8 @@ Four modules and one data path:
 
 ```
 src/
-├─ main.rs            # eframe entry point, logger init
+├─ lib.rs             # library module root used by tests and the native launcher
+├─ main.rs            # thin eframe entry point and logger initialization
 ├─ app.rs             # UltraFastApp — all UI state, top bar, frame loop
 ├─ data.rs            # DataEngine — LazyFrame ownership, open_path, fetch_page
 ├─ columns.rs         # alias_map/canonicalize_columns + the filter DSL parser
@@ -187,7 +190,7 @@ By participating you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md)
 
 To report a security issue, follow [SECURITY.md](SECURITY.md) — please do not open a public issue.
 
-Release history lives in [CHANGELOG.md](CHANGELOG.md).
+Project history and unreleased changes live in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

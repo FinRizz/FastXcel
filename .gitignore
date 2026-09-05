@@ -1,6 +1,6 @@
 # Rust / Cargo
 /target/
-/Cargo.lock
+/fastxcel.exe
 
 # Debug / Release
 **/*.rs.bk

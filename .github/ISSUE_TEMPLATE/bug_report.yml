@@ -1,0 +1,36 @@
+name: Bug report
+description: Report reproducible incorrect behavior or a crash.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Include the expected behavior and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: List exact steps and a minimal safe sample if possible.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: FastXcel version or commit
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Windows and Rust versions
+    validations:
+      required: true
+  - type: textarea
+    id: input_shape
+    attributes:
+      label: Input details
+      description: Format, approximate rows/columns, relevant dtypes, and filter expression.

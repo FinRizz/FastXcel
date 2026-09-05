@@ -1,0 +1,5 @@
+symbol,note
+ABC,plain
+DEF,"unterminated
+still part of the damaged record
+and this is not a recoverable logical row

@@ -1,0 +1,6 @@
+symbol,price,volume
+ABC,10,100
+DEF,20
+GHI,30,300,unexpected
+
+JKL,,400
