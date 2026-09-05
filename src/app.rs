@@ -51,7 +51,10 @@ impl UltraFastApp {
     }
 
     fn selected_cell_value(df: &DataFrame, cell_id: CellId) -> Option<String> {
-        let row_index = usize::try_from(cell_id.row.get()).ok()?;
+        let source_ids = df.get_columns().first()?;
+        let row_index = (0..df.height()).find(|&row| {
+            crate::ui::table::source_row_id_value(source_ids, row) == Some(cell_id.row.get())
+        })?;
         let col_index = usize::try_from(cell_id.column.get()).ok()?;
         let column = df.get_columns().get(col_index)?;
         Some(cell_str(column, row_index))
@@ -179,6 +182,7 @@ impl eframe::App for UltraFastApp {
                     self.ui_state.clear_error();
                 }
                 Err(error) => {
+                    self.last_page = None;
                     self.ui_state.open_failed(error.to_string());
                 }
             }
@@ -276,5 +280,25 @@ impl eframe::App for UltraFastApp {
         });
 
         ctx.request_repaint();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use polars::prelude::*;
+
+    #[test]
+    fn selected_value_uses_source_identity_after_paging_or_filtering() {
+        let df = DataFrame::new(vec![
+            Series::new("row_id".into(), &[101_u32, 205]),
+            Series::new("value".into(), &["first", "second"]),
+        ])
+        .unwrap();
+        let cell = CellId::new(SourceRowId::new(205), SourceColumnId::new(1));
+        assert_eq!(
+            UltraFastApp::selected_cell_value(&df, cell).as_deref(),
+            Some("second")
+        );
     }
 }

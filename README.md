@@ -47,6 +47,9 @@ Opening a multi-gigabyte dataset in a spreadsheet is a bad time. Excel caps out 
 
 Use the [download link above](#download) to get `fastxcel.exe`.
 
+The Windows executable is built with a bundled FastXcel icon, so the taskbar and file
+explorer entry match the app.
+
 ### Build from source
 
 Requires the [Rust toolchain](https://rustup.rs) version 1.88 or newer.
@@ -117,18 +120,25 @@ A filter that parses but is invalid for the data, such as comparing a text colum
 
 ## Current status and limitations
 
-FastXcel is a working MVP at `0.1.0`. Current limitations:
+FastXcel is a working MVP at `0.2.0`. Current limitations:
 
-- Opening a file materializes it. The schema is currently derived by collecting the whole frame, so peak memory on open scales with file size rather than page size. Paging after open is lazy.
-- The page is re-collected every frame. There is no result cache, so the Polars query runs continuously while the window is open.
-- No total row count. Counting rows would require scanning the file, so it is skipped by design. The `+` indicator is a heuristic.
-- Paging past the end shows an empty table rather than clamping, and `Prev` at offset 0 is a no-op.
+- File opening reads the schema without collecting the whole frame. Pages are collected lazily and cached, but selective filters may still scan large portions of a file.
+- No total row count. The `+` indicator uses a one-row lookahead, and `Next` is disabled on the final page.
 - No sorting, no column pinning, no editing, and no export. This is a viewer.
 - CSV parsing assumes a header row, infers types from the first 512 rows, and ignores malformed rows silently.
 
 Performance numbers are intentionally absent until they are reproducible on a published benchmark.
 
 ## Architecture
+
+Parquet loading preserves columns and their supported Polars types, including timestamps,
+dates, times, durations, decimals, small integers, categorical values, lists, arrays and
+structs. Timestamps display their local time and UTC offset for fixed offsets (including
+`+05:30`) and IANA zones. Unsupported types produce an error instead of silently hiding
+columns. This does not guarantee support for every possible Parquet extension type.
+
+Page navigation reads one extra row to detect the end accurately. Changing a filter returns
+to the first page, and failed queries clear the old page so stale results are not displayed.
 
 The main flow runs through four modules:
 

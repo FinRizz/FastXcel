@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0]
 
+### Fixed
+
+- Preserve temporal and other supported Parquet columns using full Polars type support;
+  remove the fallback that hid timestamps and discarded filters.
+- Display nanosecond timestamps with fixed offsets and IANA timezone conversion.
+- Avoid internal row-ID column collisions, detect the final page accurately, reset paging
+  when filters change, clear stale results on query failure, and resolve selected cells
+  by their source row identity.
+
+- Recover pages from Parquet files whose unsupported timestamp columns prevent Polars from
+  materializing a series, including timezone-qualified nanosecond timestamps.
+- Restore horizontal scrolling for wide data tables while retaining resizable column widths.
+
 ### Added
 
 - A library crate seam and parser characterization tests.
@@ -18,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of squeezing every column into the viewport.
 - Windows release builds now embed the FastXcel icon into the `.exe` and the release workflow
   runs a smoke test after packaging.
+- Windows builds use the provided `assets/fastxcel.ico` for the executable and app window chrome.
 
 ## 0.1.0 repository milestone - 2025-09-02
 

@@ -46,6 +46,7 @@ impl AppState {
 
     pub fn set_filter_query(&mut self, query: impl Into<String>) {
         self.filter_query = query.into();
+        self.current_offset = 0;
     }
 
     pub fn clear_error(&mut self) {
@@ -56,6 +57,19 @@ impl AppState {
 impl Default for AppState {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn changing_filter_returns_to_first_page() {
+        let mut state = AppState::new();
+        state.next_page();
+        state.set_filter_query("value > 2");
+        assert_eq!(state.current_offset, 0);
     }
 }
 

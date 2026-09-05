@@ -4,11 +4,8 @@ use eframe::NativeOptions;
 use fastxcel::app::UltraFastApp;
 
 fn app_icon() -> egui::IconData {
-    eframe::icon_data::from_png_bytes(include_bytes!("../assets/icon.png"))
-        .unwrap_or_else(|error| {
-            log::warn!("Failed to load app icon: {error}");
-            egui::IconData::default()
-        })
+    eframe::icon_data::from_png_bytes(include_bytes!(concat!(env!("OUT_DIR"), "/fastxcel-icon.png")))
+        .expect("generated icon PNG is valid")
 }
 
 fn main() -> eframe::Result<()> {

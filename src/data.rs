@@ -101,10 +101,17 @@ impl DataEngine {
             .as_ref()
             .ok_or_else(|| PolarsError::ComputeError("No file open".into()))?;
 
+        let mut row_id_name = "__source_row_id".to_owned();
+        while self
+            .schema
+            .as_ref()
+            .is_some_and(|schema| schema.get(&row_id_name).is_some())
+        {
+            row_id_name.push('_');
+        }
         let lf = lf
             .clone()
-            .with_row_index("__source_row_id", Some(self.row_index_offset));
-        let original_lf = lf.clone();
+            .with_row_index(&row_id_name, Some(self.row_index_offset));
         // Canonicalize OHLCV aliases (no-op if not present).
         let mut lf = canonicalize_columns(lf)?;
         let cache_key = self.page_cache_key(offset, limit, filter_expr);
@@ -120,31 +127,16 @@ impl DataEngine {
             lf = lf.filter(expr.to_polars_expr());
         }
 
-        let df = match lf
-            .clone()
-            .slice(offset as i64, limit.try_into().unwrap())
-            .collect()
-        {
-            Ok(df) => df,
-            Err(error) if is_timestamp_materialization_error(&error) => {
-                let fallback_columns = fallback_columns(self.schema.as_ref());
-                if fallback_columns.is_empty() {
-                    return Err(error);
-                }
-
-                let fallback_exprs = std::iter::once(col("__source_row_id"))
-                    .chain(fallback_columns.iter().map(|name| col(name.as_str())))
-                    .collect::<Vec<_>>();
-                let fallback_lf = canonicalize_columns(original_lf.select(fallback_exprs))?;
-                fallback_lf
-                    .slice(offset as i64, limit.try_into().unwrap())
-                    .collect()?
-            }
-            Err(error) => return Err(error),
-        };
-
-        // Heuristic: try reading one extra row to see if more exists, without large overhead.
-        let has_more = df.height() == limit;
+        let offset = i64::try_from(offset)
+            .map_err(|_| PolarsError::ComputeError("page offset is too large".into()))?;
+        let read_limit = limit
+            .checked_add(1)
+            .and_then(|n| IdxSize::try_from(n).ok())
+            .filter(|_| limit > 0)
+            .ok_or_else(|| PolarsError::ComputeError("invalid page size".into()))?;
+        let df = lf.slice(offset, read_limit).collect()?;
+        let has_more = df.height() > limit;
+        let df = df.head(Some(limit));
         self.page_cache.insert(cache_key, (df.clone(), has_more));
         Ok((df, has_more))
     }
@@ -223,32 +215,4 @@ fn filter_signature(filter_expr: &str) -> u64 {
     let mut hasher = DefaultHasher::new();
     filter_expr.hash(&mut hasher);
     hasher.finish()
-}
-
-fn fallback_columns(schema: Option<&Schema>) -> Vec<String> {
-    schema
-        .into_iter()
-        .flat_map(|schema| schema.iter_fields())
-        .filter_map(|field| {
-            let name = field.name().as_str();
-            let lower = name.to_ascii_lowercase();
-            let problematic_name = lower.contains("timestamp") || lower.contains("datetime");
-            let problematic_dtype = matches!(
-                field.dtype(),
-                DataType::Datetime(_, _) | DataType::Date | DataType::Time
-            );
-
-            if problematic_name || problematic_dtype {
-                None
-            } else {
-                Some(name.to_string())
-            }
-        })
-        .collect()
-}
-
-fn is_timestamp_materialization_error(error: &PolarsError) -> bool {
-    error
-        .to_string()
-        .contains("cannot create series from Timestamp(Second, None)")
 }

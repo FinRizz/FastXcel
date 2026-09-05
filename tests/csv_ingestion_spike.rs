@@ -74,6 +74,13 @@ fn flexible_rows_preserve_missing_and_fallback_uncertain_mappings() {
 
 #[test]
 fn embedded_newline_is_one_record_with_a_stable_byte_span() {
+    let bytes = fs::read(fixture("embedded_newline.csv")).unwrap();
+    let crlf = bytes.windows(2).any(|pair| pair == b"\r\n");
+    let expected_field = if crlf {
+        b"first line\r\nsecond line".as_slice()
+    } else {
+        b"first line\nsecond line".as_slice()
+    };
     let mut rows = Vec::new();
     scan_csv(
         &fixture("embedded_newline.csv"),
@@ -88,10 +95,10 @@ fn embedded_newline_is_one_record_with_a_stable_byte_span() {
     assert_eq!(rows.len(), 2);
     assert!(
         matches!(&rows[0], CsvRow::Mapped { source_row_id: 1, fields, span }
-        if fields[1].as_deref() == Some(b"first line\nsecond line".as_slice())
+        if fields[1].as_deref() == Some(expected_field)
             && span.start_line == 2
-            && span.start == 12
-            && span.end == 41)
+            && span.start == if crlf { 13 } else { 12 }
+            && span.end == if crlf { 44 } else { 41 })
     );
 }
 
@@ -141,6 +148,8 @@ fn invalid_utf8_becomes_a_positioned_raw_fallback() {
 #[test]
 fn unclosed_quote_preserves_the_remaining_file_as_one_span() {
     let path = fixture("unclosed_quote.csv");
+    let bytes = fs::read(&path).unwrap();
+    let crlf = bytes.windows(2).any(|pair| pair == b"\r\n");
     let mut rows = Vec::new();
     scan_csv(&path, CsvScanOptions::default(), |row| {
         rows.push(row);
@@ -158,7 +167,7 @@ fn unclosed_quote_preserves_the_remaining_file_as_one_span() {
     };
     assert_eq!(source_row_id, 2);
     assert_eq!(span.start_line, 3);
-    assert_eq!(span.start, 22);
+    assert_eq!(span.start, if crlf { 24 } else { 22 });
     assert_eq!(span.end, fs::metadata(&path).unwrap().len());
 
     let mut chunks = 0;
