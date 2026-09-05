@@ -5,7 +5,7 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0]
 
 ### Added
 
@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CHANGELOG.md`, `docs/ARCHITECTURE.md`, GitHub issue/PR templates, and a CI workflow.
 - Expanded `README.md` with a filter-expression reference, the column alias table, and an
   explicit list of current limitations.
+- Wide tables now keep their content-sized column widths so horizontal scrolling stays available
+  instead of squeezing every column into the viewport.
+- Windows release builds now embed the FastXcel icon into the `.exe` and the release workflow
+  runs a smoke test after packaging.
 
 ## 0.1.0 repository milestone - 2025-09-02
 
