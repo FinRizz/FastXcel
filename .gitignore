@@ -5,6 +5,7 @@
 # Debug / Release
 **/*.rs.bk
 **/*.pdb
+*.exe
 
 # IDE / Editor specific
 .vscode/
