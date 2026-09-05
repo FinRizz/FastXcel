@@ -1,14 +1,19 @@
 # FastXcel
 
+<p align="center">
+  <img src="assets/banner_image.png" alt="FastXcel banner">
+</p>
+
 FastXcel is a Windows-first desktop viewer for large CSV and Parquet datasets. It is built with Rust, Polars, and egui to keep huge tabular files usable without loading them into a spreadsheet.
 
 [![CI](https://github.com/FinRizz/FastXcel/actions/workflows/ci.yml/badge.svg)](https://github.com/FinRizz/FastXcel/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
+[![Rust](https://img.shields.io/badge/rust-1.88%2B-orange.svg)](https://www.rust-lang.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey.svg)](#download)
 
 ## Download
 
+- [<img src="assets/icon.png" alt="FastXcel icon" width="96">](https://github.com/FinRizz/FastXcel/raw/main/release/fastxcel.exe)
 - [Download the Windows binary](https://github.com/FinRizz/FastXcel/raw/main/release/fastxcel.exe)
 - [View all releases](https://github.com/FinRizz/FastXcel/releases)
 
@@ -32,6 +37,7 @@ Opening a multi-gigabyte dataset in a spreadsheet is a bad time. Excel caps out 
 - Live filtering with a small comparison DSL, for example `Open > 100 & Volume > 10000`
 - Schema-agnostic handling for files with different column layouts
 - Paged navigation with a configurable page size from 1,000 to 2,000,000 rows
+- Horizontal scrolling for wide tables, so columns do not get squeezed into the viewport
 - GPU-backed rendering via `eframe`'s wgpu backend
 - Single self-contained executable, with no runtime or interpreter to install
 
@@ -43,28 +49,29 @@ Use the [download link above](#download) to get `fastxcel.exe`.
 
 ### Build from source
 
-Requires the [Rust toolchain](https://rustup.rs) version 1.75 or newer.
+Requires the [Rust toolchain](https://rustup.rs) version 1.88 or newer.
 
 ```powershell
 git clone https://github.com/FinRizz/FastXcel
 cd FastXcel
 
-cargo build --release
+cargo build --release --locked
+.\scripts\embed-windows-icon.ps1
 .\target\release\fastxcel.exe
 ```
 
-Always build with `--release`. A debug build of Polars is much slower and makes the app feel broken on realistic datasets.
+Always build with `--release --locked`. A debug build of Polars is much slower and makes the app feel broken on realistic datasets, and `--locked` keeps the release build reproducible. Run `.\scripts\embed-windows-icon.ps1` after the build to generate `target\release\fastxcel.ico` and embed the Windows icon from `assets/icon.png` into the `.exe`.
 
 To build and launch in one step:
 
 ```powershell
-cargo run --release
+cargo run --release --locked
 ```
 
 For logging:
 
 ```powershell
-$env:RUST_LOG="debug"; cargo run --release
+$env:RUST_LOG="debug"; cargo run --release --locked
 ```
 
 Linux and macOS are not currently tested. The dependency stack is cross-platform, so a source build may work with the usual GTK or Wayland development packages installed.

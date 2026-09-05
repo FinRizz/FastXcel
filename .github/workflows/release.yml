@@ -23,7 +23,15 @@ jobs:
           targets: x86_64-pc-windows-msvc
 
       - name: Build release binary
-        run: cargo build --release
+        run: cargo build --release --locked
+
+      - name: Embed executable icon
+        shell: pwsh
+        run: .\scripts\embed-windows-icon.ps1
+
+      - name: Smoke test release binary
+        shell: pwsh
+        run: .\target\release\fastxcel.exe --smoke-test
 
       - name: Package executable
         shell: pwsh

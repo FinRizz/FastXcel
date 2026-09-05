@@ -27,9 +27,7 @@ impl<'a> DataTableWidget<'a> {
             .min_scrolled_height(0.0)
             .max_scroll_height(f32::INFINITY);
 
-        for _ in cols.iter().skip(1) {
-            table = table.column(Column::remainder());
-        }
+        table = table.columns(Column::auto(), cols.len().saturating_sub(1));
 
         table
             .header(20.0, |mut header| {
