@@ -6,6 +6,7 @@
 **/*.rs.bk
 **/*.pdb
 *.exe
+!release/fastxcel.exe
 
 # IDE / Editor specific
 .vscode/

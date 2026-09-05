@@ -9,10 +9,10 @@ FastXcel is a Windows-first desktop viewer for large CSV and Parquet datasets. I
 
 ## Download
 
-- [Download the Windows executable](https://github.com/FinRizz/FastXcel/raw/main/fastxcel.exe)
-- [View releases](https://github.com/FinRizz/FastXcel/releases)
+- [Download the Windows binary](https://github.com/FinRizz/FastXcel/raw/main/release/fastxcel.exe)
+- [View all releases](https://github.com/FinRizz/FastXcel/releases)
 
-The download link fetches the tracked `fastxcel.exe` from the `main` branch in this repository. If you just want to run the app on Windows, download the executable and launch it directly.
+The download link points to the checked-in Windows binary at `release/fastxcel.exe`. If you prefer, you can still build from source using the instructions below.
 
 ## Why FastXcel
 
