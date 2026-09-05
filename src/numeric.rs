@@ -119,6 +119,9 @@ mod tests {
     #[test]
     fn rejects_overflow_and_trailing_tokens() {
         assert_eq!(parse_numeric("1e400"), Err(NumericError::Overflow));
-        assert_eq!(parse_numeric("12 trailing"), Err(NumericError::InvalidSyntax));
+        assert_eq!(
+            parse_numeric("12 trailing"),
+            Err(NumericError::InvalidSyntax)
+        );
     }
 }

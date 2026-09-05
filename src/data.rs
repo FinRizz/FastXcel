@@ -6,9 +6,9 @@ use crate::model::{
 };
 use crate::parquet_reader::open_schema as open_parquet_schema;
 use polars::prelude::*;
-use std::path::{Path, PathBuf};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
+use std::path::{Path, PathBuf};
 
 pub struct DataEngine {
     path: Option<PathBuf>,
@@ -120,7 +120,11 @@ impl DataEngine {
             lf = lf.filter(expr.to_polars_expr());
         }
 
-        let df = match lf.clone().slice(offset as i64, limit.try_into().unwrap()).collect() {
+        let df = match lf
+            .clone()
+            .slice(offset as i64, limit.try_into().unwrap())
+            .collect()
+        {
             Ok(df) => df,
             Err(error) if is_timestamp_materialization_error(&error) => {
                 let fallback_columns = fallback_columns(self.schema.as_ref());
@@ -149,12 +153,7 @@ impl DataEngine {
         self.schema.as_ref()
     }
 
-    pub fn page_cache_key(
-        &self,
-        offset: usize,
-        limit: usize,
-        filter_expr: &str,
-    ) -> PageCacheKey {
+    pub fn page_cache_key(&self, offset: usize, limit: usize, filter_expr: &str) -> PageCacheKey {
         PageCacheKey::new(
             self.file_generation,
             offset,

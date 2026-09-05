@@ -33,7 +33,8 @@ impl UltraFastApp {
         let t0 = Instant::now();
         match self.engine.open_path(path) {
             Ok(_stats) => {
-                self.ui_state.apply(AppCommand::OpenSucceeded(path.to_path_buf()));
+                self.ui_state
+                    .apply(AppCommand::OpenSucceeded(path.to_path_buf()));
                 self.selected_cell = None;
                 self.interpretation_input.clear();
                 self.last_page = None;
@@ -42,7 +43,8 @@ impl UltraFastApp {
                 });
             }
             Err(error) => {
-                self.ui_state.apply(AppCommand::OpenFailed(error.to_string()));
+                self.ui_state
+                    .apply(AppCommand::OpenFailed(error.to_string()));
                 self.last_stats = None;
             }
         }
@@ -203,7 +205,8 @@ impl eframe::App for UltraFastApp {
 
             let clicked_cell = DataTableWidget::new(df).show(
                 ui,
-                self.selected_cell.map(|cell| (cell.row.get(), cell.column.get() as usize)),
+                self.selected_cell
+                    .map(|cell| (cell.row.get(), cell.column.get() as usize)),
             );
 
             if let Some((source_row_id, column_index)) = clicked_cell {
@@ -257,9 +260,8 @@ impl eframe::App for UltraFastApp {
                                 self.ui_state.clear_error();
                                 self.interpretation_input = value.to_string();
                             } else {
-                                self.ui_state.open_failed(format!(
-                                    "Invalid interpretation: {trimmed}"
-                                ));
+                                self.ui_state
+                                    .open_failed(format!("Invalid interpretation: {trimmed}"));
                             }
                         }
 

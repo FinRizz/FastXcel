@@ -68,10 +68,7 @@ pub enum AppCommand {
     NextPage,
     SetFilterQuery(String),
     ClearError,
-    InterpretCell {
-        cell_id: CellId,
-        value: Option<f64>,
-    },
+    InterpretCell { cell_id: CellId, value: Option<f64> },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -81,10 +78,7 @@ pub enum AppEvent {
     PageMoved(usize),
     FilterChanged(String),
     ErrorCleared,
-    InterpretationChanged {
-        cell_id: CellId,
-        value: Option<f64>,
-    },
+    InterpretationChanged { cell_id: CellId, value: Option<f64> },
 }
 
 impl AppState {

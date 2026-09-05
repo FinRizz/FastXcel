@@ -380,16 +380,18 @@ impl<'a> Parser<'a> {
             }
         };
 
-        let value_token = self
-            .next()
-            .ok_or(FilterParseError::UnexpectedEnd { position: op_token.end })?;
+        let value_token = self.next().ok_or(FilterParseError::UnexpectedEnd {
+            position: op_token.end,
+        })?;
         let value = match &value_token.kind {
-            TokenKind::Number(text) => FilterValue::Number(
-                parse_numeric(text).map_err(FilterParseError::InvalidNumber)?,
-            ),
+            TokenKind::Number(text) => {
+                FilterValue::Number(parse_numeric(text).map_err(FilterParseError::InvalidNumber)?)
+            }
             TokenKind::Ident(text) => {
-                if matches!(op, ComparisonOp::Gt | ComparisonOp::Ge | ComparisonOp::Lt | ComparisonOp::Le)
-                {
+                if matches!(
+                    op,
+                    ComparisonOp::Gt | ComparisonOp::Ge | ComparisonOp::Lt | ComparisonOp::Le
+                ) {
                     return Err(FilterParseError::InvalidComparison {
                         operator: op,
                         literal: text.clone(),

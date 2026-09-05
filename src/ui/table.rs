@@ -10,11 +10,7 @@ impl<'a> DataTableWidget<'a> {
         Self { df }
     }
 
-    pub fn show(
-        &self,
-        ui: &mut egui::Ui,
-        selected: Option<(u64, usize)>,
-    ) -> Option<(u64, usize)> {
+    pub fn show(&self, ui: &mut egui::Ui, selected: Option<(u64, usize)>) -> Option<(u64, usize)> {
         let cols = self.df.get_columns();
         if cols.is_empty() {
             ui.label("No columns to display");
@@ -59,8 +55,7 @@ impl<'a> DataTableWidget<'a> {
                     for (index, c) in cols.iter().enumerate().skip(1) {
                         let is_selected = selected == Some((source_row_id, index));
                         row.col(|ui| {
-                            let response =
-                                ui.selectable_label(is_selected, cell_str(c, r));
+                            let response = ui.selectable_label(is_selected, cell_str(c, r));
                             if response.clicked() {
                                 clicked = Some((source_row_id, index));
                             }

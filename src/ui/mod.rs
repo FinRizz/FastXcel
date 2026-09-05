@@ -1,2 +1,2 @@
-pub mod table;
 pub mod state;
+pub mod table;
