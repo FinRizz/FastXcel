@@ -13,11 +13,12 @@ FastXcel is a Windows-first desktop viewer for large CSV and Parquet datasets. I
 
 ## Download
 
-- [<img src="assets/icon.png" alt="FastXcel icon" width="96">](https://github.com/FinRizz/FastXcel/raw/main/release/fastxcel.exe)
-- [Download the Windows binary](https://github.com/FinRizz/FastXcel/raw/main/release/fastxcel.exe)
+- [<img src="assets/icon.png" alt="FastXcel icon" width="96">](https://github.com/FinRizz/FastXcel/releases/latest/download/fastxcel-setup.exe)
+- [Download the Windows installer](https://github.com/FinRizz/FastXcel/releases/latest/download/fastxcel-setup.exe)
+- [Download the portable Windows binary](https://github.com/FinRizz/FastXcel/raw/main/release/fastxcel.exe)
 - [View all releases](https://github.com/FinRizz/FastXcel/releases)
 
-The download link points to the checked-in Windows binary at `release/fastxcel.exe`. If you prefer, you can still build from source using the instructions below.
+The installer adds FastXcel to the Windows Start menu and includes an uninstaller. The portable binary remains available for users who do not want to install it.
 
 ## Why FastXcel
 
@@ -45,7 +46,9 @@ Opening a multi-gigabyte dataset in a spreadsheet is a bad time. Excel caps out 
 
 ### Windows binary
 
-Use the [download link above](#download) to get `fastxcel.exe`.
+Use the [Windows installer](#download) to add FastXcel to the Start menu. A desktop
+shortcut is optional during setup. Use the portable `fastxcel.exe` if you prefer to
+run the app without registering it with Windows.
 
 The Windows executable is built with a bundled FastXcel icon, so the taskbar and file
 explorer entry match the app.
