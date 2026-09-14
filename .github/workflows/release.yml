@@ -37,13 +37,40 @@ jobs:
         shell: pwsh
         run: |
           $exe = "target\release\fastxcel.exe"
-          $checksum = Get-FileHash -Algorithm SHA256 $exe
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item $exe dist\fastxcel.exe
-          $checksum.Hash.ToLower() | Set-Content dist\fastxcel.exe.sha256 -NoNewline
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          $metadata = cargo metadata --no-deps --format-version 1 | ConvertFrom-Json
+          $version = $metadata.packages[0].version
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$version" installer\fastxcel.iss
+
+      - name: Generate checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem dist\*.exe | ForEach-Object {
+            $hash = (Get-FileHash -Algorithm SHA256 $_.FullName).Hash.ToLower()
+            $hash | Set-Content "$($_.FullName).sha256" -NoNewline
+          }
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fastxcel-windows
           path: dist/*
+
+      - name: Publish tagged release
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $assets = Get-ChildItem dist -File | Select-Object -ExpandProperty FullName
+          gh release view $env:GITHUB_REF_NAME 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:GITHUB_REF_NAME $assets --clobber
+          } else {
+            gh release create $env:GITHUB_REF_NAME $assets --verify-tag --generate-notes
+          }
